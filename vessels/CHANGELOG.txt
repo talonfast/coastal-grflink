@@ -1,6 +1,11 @@
 BC Ferries: Vessels - changelog
 ==================================================
 
+v9 (2026-10-31)
+- Built with the new Python GRF writer instead of NML: the download is
+  smaller (86.6 MB -> 82.0 MB) and the ships behave exactly as in v8.
+- Sprites re-rendered; no intended visual change (a few pixels differ).
+
 v8 (2026-10-04)
 - Terminal objects moved out to their own GRF, BC Ferries: Terminals
   (TFBT). This GRF is now vessels only; ships and saves are unaffected.
