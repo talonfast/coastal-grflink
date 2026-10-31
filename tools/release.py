@@ -8,7 +8,8 @@
    ~/Documents/OpenTTD/newgrf),
 4. --upload: creates (or updates) the GitHub release <release>-v<VERSION> per set on the repository of
    the "origin" remote (or --repo) and uploads the tar. Re-running with the same VERSION replaces that
-   release's tar. Authentication uses the GitHub credentials stored for git (git credential fill).
+   release's tar. Authentication uses the GitHub credentials stored for git (git credential fill),
+   or else the GitHub CLI's login (gh auth token).
    Upload refuses to run from a working tree with uncommitted changes, from a commit that isn't
    pushed to origin, or when the release already exists at a different commit (bump VERSION).
 
@@ -67,13 +68,20 @@ def install(paths, target):
 
 
 def github_token() -> str:
+    """The GitHub token git has stored (HTTPS remotes), else the GitHub CLI's (gh auth token)."""
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
     out = subprocess.run(["git", "credential", "fill"], input="protocol=https\nhost=github.com\n\n",
-                         capture_output=True, text=True, check=True, cwd=ROOT).stdout
+                         capture_output=True, text=True, cwd=ROOT, env=env).stdout
     fields = dict(line.split("=", 1) for line in out.splitlines() if "=" in line)
-    if not fields.get("password"):
-        raise SystemExit("no GitHub credentials stored for git (git credential fill); "
-                         "log in with gh auth login")
-    return fields["password"]
+    if fields.get("password"):
+        return fields["password"]
+    try:
+        token = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    except FileNotFoundError:
+        token = ""
+    if not token:
+        raise SystemExit("no GitHub credentials: none stored for git, and no GitHub CLI login (gh auth login)")
+    return token
 
 
 def api(method, url, token, data=None, content_type="application/json"):

@@ -15,7 +15,7 @@ from newgrf import GRF, Param, cli  # noqa: E402
 from newgrf import actions as A  # noqa: E402
 from newgrf.sprites import sheet_sprites  # noqa: E402
 
-VERSION = 8
+VERSION = 9
 NAME = "BC Ferries: Vessels {SILVER}v%d" % VERSION
 DESCRIPTION = ("Ferries of British Columbia: BC Ferries' Spirit, Coastal, C-class, Salish, Island and minor-route "
                "classes, plus Black Ball's MV Coho and the Victoria Clipper.{}{}Passenger ships with a refittable "
