@@ -24,6 +24,7 @@ SETS = {
     "aircraft": ("aircraft", "src/build_aircraft.py", "bc-aircraft.grf", "bc-aircraft", "src/build_aircraft.py"),
     "airports": ("airports", "src/build_airports.py", "bc-airports.grf", "bc-airports", "src/build_airports.py"),
     "coastal": ("coastal", "src/build_coastal.py", "coastal-waterfront.grf", "coastal-waterfront", "src/build_coastal.py"),
+    "transit": ("transit", "src/build_transit.py", "pnw-transit.grf", "pnw-transit", "src/build_transit.py"),
 }
 
 

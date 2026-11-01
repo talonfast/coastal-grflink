@@ -1,7 +1,8 @@
 ![Coastal GrfLink](docs/coastal-grflink.png)
 
 OpenTTD NewGRFs for coastal British Columbia: the BC Ferries fleet and its
-terminals, plus the airlines, seaplanes and airports that connect the coast.
+terminals, the airlines, seaplanes and airports that connect the coast, and
+the buses, streetcars and trains of Victoria, Vancouver, Seattle and Portland.
 For OpenTTD 13+ and JGR's Patch Pack; the Harbour Air seaplanes and the
 seaplane terminals need [TGTFTD](https://github.com/teagangosling/TGTFTD), the
 JGRPP fork with seaplanes. One repo, separate GRFs so you can load only what
@@ -14,6 +15,7 @@ you want:
 | BC Aviation: Aircraft (airliners, seaplanes, S-76) | `aircraft/` | `bc-aircraft.grf` | `TFBA` |
 | BC Aviation: Airports (YVR, YYJ, seaplane terminals) | `airports/` | `bc-airports.grf` | `TFBY` |
 | Coastal: Waterfront | `coastal/` | `coastal-waterfront.grf` | `TFBW` |
+| PNW Transit (buses, streetcars, Link, SkyTrain, Amtrak Cascades) | `transit/` | `pnw-transit.grf` | `TFBR` |
 
 Shared code lives in `common/`: the GRF writer (`newgrf/`), the voxel
 renderer (`render.py`), the point-cloud renderer of the seaplanes and seaplane
@@ -218,6 +220,31 @@ so they sit comfortably next to base-set buildings.
 | Harbour ferry dock | 1x1, water | ticket hut, little harbour ferries |
 | Timber pile pier | 1x1, water | |
 
+## PNW Transit
+| Vehicle | Type | Year | Passengers | km/h |
+|---|---|---|---|---|
+| BC Transit Enviro500 double-decker (Victoria) | bus | 2008 | 90 | 80 |
+| BC Transit Enviro500, 2024 green livery (variant) | bus | 2024 | 90 | 80 |
+| TransLink New Flyer XDE60 | articulated bus, 2 sections | 2018 | 100 | 80 |
+| Seattle Streetcar Inekon 12 Trio | tram, 3 sections | 2007 | 140 | 70 |
+| Portland Streetcar Skoda 10 T | tram, 3 sections | 2001 | 157 | 70 |
+| Sound Transit Link Kinkisharyo LRV (Series 1) | tram, 3 sections | 2009 | 200 | 90 |
+| Sound Transit Link Siemens S70 (Series 2, variant) | tram, 3 sections | 2021 | 200 | 90 |
+| TransLink SkyTrain Mark V | electric multiple unit, 5 cars | 2025 | 780 | 90 |
+| Amtrak Cascades Airo ALC-42E | diesel locomotive | 2026 | - | 200 |
+| Amtrak Cascades Airo coach / cab car | wagons | 2026 | 66 / 50 | 200 |
+
+* Link runs on tram track, and the SkyTrain on ordinary electrified rail.
+* Build the Airo as the locomotive, coaches, then the cab car last: the cab
+  car has its driving cab at the back end of the train.
+* Liveries: BC Transit red, white and blue (and the 2024 green), TransLink
+  white with a blue skirt and the green splash, the Seattle Streetcar in red,
+  Portland in teal and blue, Link in white with the teal waves, the SkyTrain
+  Mark V in TransLink blue, and the Airo in the Cascades evergreen, cream and
+  mocha with the Cascade Range along the cars.
+* Passengers only. Road vehicles use IDs 0x58-0x67 and trains 0x74-0x79,
+  after the default vehicles, so they replace none of them.
+
 ## Logos
 Liveries and signage use the official vector logos, fetched by
 `common/fetch_logos.py` into `common/logos/` (SVG plus a rasterised PNG):
@@ -250,7 +277,7 @@ the files it was rendered from, so a fresh clone or a pull doesn't trigger a
 render); by hand: `vessels/src/make_gfx.py`, `terminals/src/make_objects.py`,
 `aircraft/src/make_aircraft.py` and `make_seaplanes.py`,
 `airports/src/make_airports.py` and `make_seaplane_terminals.py`,
-`coastal/src/make_coastal.py` (then `make` writes the new stamp). Renders
+`coastal/src/make_coastal.py`, `transit/src/make_transit.py` (then `make` writes the new stamp). Renders
 aren't bit-for-bit reproducible across machines: different numpy/scipy versions
 can change a handful of 8bpp pixels. Sprite encoding is cached in `.grfcache/`
 (by sprite content and by the encoder's source, so editing the encoder
@@ -259,7 +286,8 @@ re-encodes everything).
 Bump the set's `VERSION` in its `src/build_<set>.py` and add a line to its
 `CHANGELOG.txt` before releasing. Item IDs are append only (list position =
 ID); the seaplanes and the S-76 use aircraft IDs 0x60-0x64, after the default
-aircraft, so they replace none of them.
+aircraft, so they replace none of them; the transit vehicles likewise start
+after the default road vehicles (0x58) and trains (0x74).
 
 `python aircraft/src/build_aircraft.py test.grf --vanilla-test` (and the same
 for `airports/src/build_airports.py`) builds a test version that keeps the
@@ -320,4 +348,5 @@ directions at 4x, then downsamples. Edit a model or stat there and rerun `make`.
 
 Airline liveries, logos and the Air Canada, Alaska Airlines and WestJet marks
 belong to those airlines; like the BC Ferries material, they are depicted
-for personal use only.
+for personal use only. So are the BC Transit, TransLink, Sound Transit, Seattle
+Streetcar, Portland Streetcar and Amtrak Cascades liveries.
