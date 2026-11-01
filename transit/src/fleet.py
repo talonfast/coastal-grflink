@@ -56,6 +56,9 @@ ROAD = [
          desc="Series 2 light rail vehicle with bigger windows and more room for bikes, here running as a tram."),
     dict(id="link2_mid", gfx="link2_mid", model=V.link2_mid, length=6, tram=True, t=10, cap=40),
     dict(id="link2_rear", gfx="link2_cab", tram=True, t=19, cap=80),
+    dict(id="edeka_truck", gfx="edeka_truck", model=V.edeka_truck, year=1970, cargo=["EGSW"],
+         name="EDEKA delivery truck", kmh=90, hp=250, t=8, cap=20, cost=90, run=90, life=15, model_life=40,
+         desc="Box truck in EDEKA yellow and blue for FIRS PNW's EDEKA Gouda Sandwiches. Carries nothing else."),
 ]
 
 RAIL = [
@@ -77,6 +80,14 @@ RAIL = [
     dict(id="airo_cab", gfx="airo_cab", model=V.airo_cab, year=2026, wagon=True,
          name="Amtrak Cascades Airo cab car", kmh=200, t=48, cap=50, cost=70, life=30, model_life=40,
          desc="Coach with a driving cab at its back end: put it last in the train."),
+    dict(id="aircraft_car", gfx="aircraft_car", model=V.aircraft_car, year=1968, wagon=True,
+         cargo=["ACFT", "ACFC", "FLPL"], name="Aircraft flatcar", kmh=110, t=30, cap=1, cost=70, life=40,
+         model_life=60,
+         desc="Heavy flatcar for FIRS PNW's aircraft, certified aircraft and floatplanes, like the cars that bring "
+              "Boeing's 737 fuselages to Renton."),
+    dict(id="edeka_container_wagon", gfx="edeka_container_wagon", model=V.edeka_container_wagon, year=1970,
+         wagon=True, cargo=["EGSW"], name="EDEKA container flatcar", kmh=120, t=22, cap=40, cost=60, life=35,
+         model_life=50, desc="Two EDEKA reefer containers for FIRS PNW's EDEKA Gouda Sandwiches."),
 ]
 
 

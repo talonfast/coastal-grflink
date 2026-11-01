@@ -1,6 +1,11 @@
 PNW Transit - changelog
 =======================
 
+v3 (2026-10-31)
+- New: freight for FIRS PNW. Aircraft flatcar (aircraft, certified aircraft,
+  floatplanes), EDEKA container flatcar and EDEKA delivery truck (EDEKA Gouda
+  Sandwiches only). Without FIRS PNW they have no cargo and stay unused.
+
 v2 (2026-10-31)
 - Fix: every vehicle boarded and unloaded at the default 5 passengers per step,
   so high-capacity cars took ages at stations. Loading speed now scales with

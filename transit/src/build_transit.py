@@ -15,14 +15,14 @@ from newgrf import GRF, cli  # noqa: E402
 from newgrf import actions as A  # noqa: E402
 from newgrf.sprites import sheet_sprites  # noqa: E402
 
-VERSION = 2
+VERSION = 3
 NAME = "PNW Transit {SILVER}v%d" % VERSION
 DESCRIPTION = ("Buses, streetcars and trains of the Pacific Northwest: BC Transit's Enviro500 double-decker, "
                "TransLink's articulated buses and the SkyTrain Mark V, the Seattle and Portland streetcars, "
-               "Seattle's Link light rail (as trams) and the Amtrak Cascades Airo.{}{}Includes 32bpp sprites up "
+               "Seattle's Link light rail (as trams) and the Amtrak Cascades Airo; with FIRS PNW, aircraft flatcars and EDEKA containers and trucks.{}{}Includes 32bpp sprites up "
                "to 4x zoom. Works with OpenTTD 13+ and JGR's Patch Pack.")
 
-CARGO = ["PASS"]
+CARGO = ["PASS", "ACFT", "ACFC", "FLPL", "EGSW"]   # FIRS PNW freight after passengers
 CC_PASSENGERS = 0x01
 CBM_ARTICULATED = 0x10
 CLIMATES_ALL = 0x0F                       # temperate, arctic, tropical, toyland
@@ -31,6 +31,14 @@ TRACTION = {"diesel": 0x08, "electric": 0x28}
 VE_DIESEL, VE_DISABLED = 0x28, 0x40       # visual effect: type << 4 | position (8 = middle)
 RV_TRAM, TRAIN_MU = 0x01, 0x04            # misc flags
 VAR_CALLBACK, VAR_CALLBACK_PARAM = 0x0C, 0x10
+
+
+def cargo_props(e):
+    """(default cargo index, refit mask, refit classes) from the entry's cargo labels; passengers by default."""
+    labels = e.get("cargo", ["PASS"])
+    if labels == ["PASS"]:
+        return 0, 0, CC_PASSENGERS
+    return CARGO.index(labels[0]), sum(1 << CARGO.index(c) for c in labels), 0
 
 
 def description(e):
@@ -50,10 +58,11 @@ def road_props(e, ids):
     if buyable:
         props += [(0x1F, A.d(A.date(e["year"]))), (0x08, A.b(A.roadveh_speed_kmh(e["kmh"]))),
                   (0x09, A.b(e["run"])), (0x11, A.b(e["cost"])), (0x13, A.b(e["hp"] // 10))]
+    cargo, refit, classes = cargo_props(e)
     props += [
-        (0x0F, A.b(e["cap"])), (0x10, A.b(0)), (0x16, A.d(0)),
+        (0x0F, A.b(e["cap"])), (0x10, A.b(cargo)), (0x16, A.d(refit)),
         (0x07, A.b(max(5, e["cap"] // 8))),                # load amount: fill in ~8 steps like vanilla carriages
-        (0x1D, A.w(CC_PASSENGERS)), (0x1E, A.w(0)),
+        (0x1D, A.w(classes)), (0x1E, A.w(0)),
         (0x14, A.b(round(e["t"] * 4))),
         (0x1C, A.b(RV_TRAM if e.get("tram") else 0)),
     ]
@@ -84,10 +93,11 @@ def rail_props(e, ids):
                   (0x0E, A.d(RUNNING_COST_ELECTRIC if e["traction"] == "electric" else RUNNING_COST_DIESEL))]
     else:
         props.append((0x0D, A.b(0)))
+    cargo, refit, classes = cargo_props(e)
     props += [
-        (0x14, A.b(e["cap"])), (0x15, A.b(0)), (0x1D, A.d(0)),
+        (0x14, A.b(e["cap"])), (0x15, A.b(cargo)), (0x1D, A.d(refit)),
         (0x07, A.b(max(5, e["cap"] // 8))),                # load amount: fill in ~8 steps like vanilla carriages
-        (0x28, A.w(CC_PASSENGERS if e["cap"] else 0)), (0x29, A.w(0)),
+        (0x28, A.w(classes if e["cap"] else 0)), (0x29, A.w(0)),
         (0x22, A.b(VE_DIESEL if e.get("traction") == "diesel" and power else VE_DISABLED)),
     ]
     if e.get("mu"):
@@ -130,7 +140,21 @@ def add_engine(grf, feature, num, e, ids, meta, name):
     grf.add(A.action3(feature, [num], default=g_world, cargo=[(0xFF, g_purchase)]))
 
 
+# FIRS PNW cargos with no NARS wagon that suits them: PNW Transit must carry each one. (The other new FIRS PNW
+# cargos ride NARS wagons by cargo class: aluminium, parts and ships as piece goods, jet fuel and dairy as liquids.)
+FIRS_PNW_OWN_CARRIERS = {"ACFT", "ACFC", "FLPL", "EGSW"}
+
+
+def check_cargo_carriers():
+    carried = {c for e in fleet.ROAD + fleet.RAIL for c in e.get("cargo", ())}
+    missing = FIRS_PNW_OWN_CARRIERS - carried
+    assert not missing, "no PNW Transit vehicle carries %s" % sorted(missing)
+    for e in fleet.ROAD + fleet.RAIL:
+        assert all(c in CARGO for c in e.get("cargo", ())), "%s carries a cargo missing from CARGO" % e["id"]
+
+
 def build(path, jobs=None):
+    check_cargo_carriers()
     grf = GRF("TFBR", NAME, DESCRIPTION, VERSION, 1)
     with open(os.path.join(ROOT, "gfx", "transit.json")) as f:
         meta = json.load(f)

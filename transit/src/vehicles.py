@@ -25,6 +25,7 @@ for _name, _rgb in {
     "linknavy": (18, 40, 92), "linkteal": (0, 150, 140),
     "mk5blue": (0, 84, 172), "mk5dark": (0, 46, 112),
     "evergreen": (24, 74, 52), "cascream": (232, 224, 198), "mocha": (112, 76, 54),
+    "edekayellow": (255, 210, 0), "edekablue": (0, 64, 152), "primer": (120, 160, 96),
     "bellows": (44, 44, 46), "lamp": (255, 246, 210), "taillamp": (220, 30, 30), "destsign": (250, 170, 40),
 }.items():
     render.MAT_ID[_name] = render._next_mat[0]
@@ -447,3 +448,54 @@ def airo_cab():
            r_plan=0.4, r_roof=0.55, mat="cascream")
     c.box(3.85, 4.0, -0.8, 0.8, 1.1, 4.6, "bellows")
     return c.bogies([2.6, -2.6], 1.0)
+
+
+# ---------------------------------------------------------------------------
+# FIRS PNW freight: aircraft and EDEKA sandwiches
+# ---------------------------------------------------------------------------
+
+render.FONT.setdefault("D", ["110", "101", "101", "101", "110"])   # render.FONT has no D; EDEKA needs one
+
+
+def _flatcar():
+    c = Car(8, RAIL_W, 4.6)
+    c.box(-4.0, 4.0, -1.25, 1.25, 1.0, 1.35, "dark")
+    return c
+
+
+def aircraft_car():
+    """Heavy flatcar with a 737 fuselage in green primer, the way Boeing's fuselages travel by rail."""
+    c = _flatcar()
+    c.ellipsoid(0.0, 0.0, 2.55, 3.95, 1.12, 1.18, "primer")
+    c.solid(lambda U, V, W: (np.abs(W - 2.85) < 0.12) & (np.abs(U) < 3.0) & (np.mod(U, 0.45) < 0.2), "dark")
+    for u in (-3.0, 3.0):
+        c.box(u - 0.3, u + 0.3, -0.9, 0.9, 1.35, 1.75, "steel")       # cradles
+    return c.bogies([2.6, -2.6], 1.0)
+
+
+def _edeka_box(c, u0, u1, w0, w1, half_width):
+    c.box(u0, u1, -half_width, half_width, w0, w1, "edekayellow")
+    c.box(u0, u1, -half_width - 0.01, half_width + 0.01, w1 - 0.45, w1 - 0.2, "edekablue")
+    mid, h = (w0 + w1 - 0.45) / 2, 0.9
+    for side in (1, -1):                                              # lettering reads front-to-back on the left,
+        c.solid(lambda U, V, W, side=side, um=(u0 + u1) / 2:            # back-to-front on the right
+                (side * V > half_width - 0.05) & (side * V < half_width + 0.03) &
+                render.text_mask(side * (um - U), W, "EDEKA", 0.0, mid, h), "edekablue", u0, u1)
+
+
+def edeka_container_wagon():
+    """Flatcar with two EDEKA reefer containers."""
+    c = _flatcar()
+    for u0, u1 in ((-3.9, -0.1), (0.1, 3.9)):
+        _edeka_box(c, u0, u1, 1.35, 3.9, 1.2)
+    return c.bogies([2.6, -2.6], 1.0)
+
+
+def edeka_truck():
+    """EDEKA box truck delivering Gouda sandwiches to the grocery stores."""
+    c = Car(8, BUS_W, 4.2)
+    c.box(2.3, 3.95, -1.15, 1.15, 0.45, 2.9, "white")
+    c.box(3.9, 3.98, -1.0, 1.0, 1.8, 2.7, "window")
+    c.box(3.9, 3.98, -1.0, 1.0, 0.7, 0.95, "lamp")
+    _edeka_box(c, -4.0, 2.2, 0.55, 3.9, 1.25)
+    return c.wheels([3.0, -1.4, -2.6])
