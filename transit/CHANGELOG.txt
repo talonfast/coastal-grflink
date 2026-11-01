@@ -1,0 +1,21 @@
+PNW Transit - changelog
+=======================
+
+v3 (2026-10-31)
+- New: freight for FIRS PNW. Aircraft flatcar (aircraft, certified aircraft,
+  floatplanes), EDEKA container flatcar and EDEKA delivery truck (EDEKA Gouda
+  Sandwiches only). Without FIRS PNW they have no cargo and stay unused.
+
+v2 (2026-10-31)
+- Fix: every vehicle boarded and unloaded at the default 5 passengers per step,
+  so high-capacity cars took ages at stations. Loading speed now scales with
+  capacity (about 8 steps to fill).
+
+v1 (2026-10-31)
+- New: BC Transit Enviro500 double-decker, in the red, white and blue livery
+  and (as a variant) the 2024 green livery.
+- New: TransLink New Flyer XDE60 articulated bus.
+- New: Seattle Streetcar Inekon 12 Trio and Portland Streetcar Skoda 10 T.
+- New: Sound Transit Link Kinkisharyo and Siemens S70 LRVs, as trams.
+- New: TransLink SkyTrain Mark V, a five-car EMU for electrified rail.
+- New: Amtrak Cascades Airo: ALC-42E locomotive, coach and cab car.

@@ -1,11 +1,11 @@
-# One repo, five GRFs. Each set lives in its own folder: src/ (models, render and build scripts) and
+# One repo, six GRFs. Each set lives in its own folder: src/ (models, render and build scripts) and
 # gfx/ (the rendered sprite sheets, committed). The GRFs are written directly by common/newgrf.
 #   make                  build every GRF (re-rendering a set's gfx/ first when its models changed)
-#   make vessels|terminals|aircraft|airports|coastal
+#   make vessels|terminals|aircraft|airports|coastal|transit
 #   make release          package releases/<set>-vN.tar for every set
 #   make install          ... and copy them into OpenTTD's newgrf folder ($OPENTTD_NEWGRF)
 #   make decals           regenerate shared logos/art in common/decals (macOS fonts)
-#   make scenes showcase aircraft-preview seaplane-preview    preview images
+#   make scenes showcase aircraft-preview seaplane-preview transit-preview    preview images
 # Without make: python build.py [set ...] and python tools/release.py [set ...] [--install] [--upload]
 
 PY     := $(if $(wildcard .venv/bin/python),$(CURDIR)/.venv/bin/python,python3)
@@ -15,7 +15,7 @@ CLOUD  := common/pointcloud.py common/newgrf/palette.py common/newgrf/sprites.py
 # Re-renders gfx/ only when the inputs' contents changed (file times alone change on every checkout).
 RENDER := $(PY) tools/render_if_changed.py
 
-all: vessels terminals aircraft airports coastal
+all: vessels terminals aircraft airports coastal transit
 
 # ---- vessels ---------------------------------------------------------------
 vessels/gfx/sprites.json: $(COMMON) vessels/src/make_gfx.py vessels/src/ships.py vessels/src/ships_models.py
@@ -56,6 +56,13 @@ coastal/coastal-waterfront.grf: coastal/gfx/objects.json coastal/src/build_coast
 	$(PY) build.py coastal
 coastal: coastal/coastal-waterfront.grf
 
+# ---- transit (buses, streetcars, Link LRVs, SkyTrain, Amtrak Cascades) -----
+transit/gfx/transit.json: $(COMMON) transit/src/vehicles.py transit/src/fleet.py transit/src/make_transit.py
+	$(RENDER) $@ transit/src/make_transit.py $^
+transit/pnw-transit.grf: transit/gfx/transit.json transit/src/build_transit.py transit/src/fleet.py $(NEWGRF)
+	$(PY) build.py transit
+transit: transit/pnw-transit.grf
+
 # ---- previews --------------------------------------------------------------
 decals:
 	$(PY) common/make_decals.py
@@ -66,6 +73,8 @@ scenes: vessels/gfx/sprites.json terminals/gfx/objects.json
 	cd terminals && $(PY) src/make_scene.py scene_swartzbay.png swartzbay
 	cd terminals && $(PY) src/make_scene.py scene_pender.png pender
 	cd terminals && $(PY) src/make_scene.py ../coastal/scene_victoria.png victoria
+transit-preview:
+	cd transit && $(PY) src/make_transit.py --preview preview.png
 aircraft-preview:
 	cd aircraft && $(PY) src/make_aircraft.py --preview preview.png
 seaplane-preview:
@@ -85,4 +94,4 @@ clean:
 	rm -f */*.grf
 	rm -rf releases dist .grfcache
 
-.PHONY: all vessels terminals aircraft airports coastal decals showcase scenes aircraft-preview seaplane-preview release install setup clean
+.PHONY: all vessels terminals aircraft airports coastal transit decals showcase scenes aircraft-preview seaplane-preview transit-preview release install setup clean

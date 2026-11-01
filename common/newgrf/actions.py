@@ -10,6 +10,7 @@ import struct
 from .text import encode as text
 
 # Features
+TRAINS, ROADVEHS = 0x00, 0x01
 SHIPS, AIRCRAFT, GLOBAL, AIRPORTS, OBJECTS, AIRPORTTILES = 0x02, 0x03, 0x08, 0x0D, 0x0F, 0x11
 
 # Variable action 2 operators
@@ -18,6 +19,7 @@ STO, RST, PSTO, ROR, SCMP, UCMP, SHL, SHR, SAR = range(0x0E, 0x17)
 
 # Callbacks (variable 0C)
 CB_REFIT_CAPACITY = 0x15
+CB_ARTICULATED = 0x16
 CB_ADDITIONAL_TEXT = 0x23
 CB_PROPERTY = 0x36
 CB_CREATE_EFFECT = 0x160
@@ -88,6 +90,15 @@ def ship_speed_kmh(kmh):
 
 def aircraft_speed_kmh(kmh):
     return _speed(kmh, 701 * 5, 2507 * 18, 128, 10)
+
+
+def train_speed_kmh(kmh):
+    return _speed(kmh, 1, 1, 1, 1)
+
+
+def roadveh_speed_kmh(kmh):
+    """Road vehicle property 08 (0.5 km-ish/h units)."""
+    return _speed(kmh, 2, 1, 1, 2)
 
 
 # ------------------------------------------------------------------------------------ actions

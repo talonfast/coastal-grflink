@@ -1,0 +1,42 @@
+from economy import Economy
+
+economy = Economy(
+    id="PACIFIC_NORTHWEST",
+    numeric_id=0,
+    cargos=[
+        "aircraft",
+        "aircraft_parts",
+        "aluminium",
+        "certified_aircraft",
+        "coal",
+        "edeka_gouda_sandwiches",
+        "engineering_supplies",
+        "farm_supplies",
+        "fish",
+        "floatplanes",
+        "food",
+        "fruits",
+        "grain",
+        "jet_fuel",
+        "livestock",
+        "logs",
+        "mail",
+        "milk",
+        "oil",
+        "paper",
+        "passengers",
+        "petrol",
+        "product_of_origin_dairy",
+        "scrap_metal",
+        "ships",
+        "steel",
+        "timber",
+    ],
+    cargoflow_graph_tuning={
+        "group_edges_subgraphs": [],
+        "ranking_subgraphs": [
+            ("sink", ["port"]),
+        ],
+        "clusters": [],
+    },
+)
