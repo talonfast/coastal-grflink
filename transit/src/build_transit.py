@@ -15,7 +15,7 @@ from newgrf import GRF, cli  # noqa: E402
 from newgrf import actions as A  # noqa: E402
 from newgrf.sprites import sheet_sprites  # noqa: E402
 
-VERSION = 1
+VERSION = 2
 NAME = "PNW Transit {SILVER}v%d" % VERSION
 DESCRIPTION = ("Buses, streetcars and trains of the Pacific Northwest: BC Transit's Enviro500 double-decker, "
                "TransLink's articulated buses and the SkyTrain Mark V, the Seattle and Portland streetcars, "
@@ -52,6 +52,7 @@ def road_props(e, ids):
                   (0x09, A.b(e["run"])), (0x11, A.b(e["cost"])), (0x13, A.b(e["hp"] // 10))]
     props += [
         (0x0F, A.b(e["cap"])), (0x10, A.b(0)), (0x16, A.d(0)),
+        (0x07, A.b(max(5, e["cap"] // 8))),                # load amount: fill in ~8 steps like vanilla carriages
         (0x1D, A.w(CC_PASSENGERS)), (0x1E, A.w(0)),
         (0x14, A.b(round(e["t"] * 4))),
         (0x1C, A.b(RV_TRAM if e.get("tram") else 0)),
@@ -85,6 +86,7 @@ def rail_props(e, ids):
         props.append((0x0D, A.b(0)))
     props += [
         (0x14, A.b(e["cap"])), (0x15, A.b(0)), (0x1D, A.d(0)),
+        (0x07, A.b(max(5, e["cap"] // 8))),                # load amount: fill in ~8 steps like vanilla carriages
         (0x28, A.w(CC_PASSENGERS if e["cap"] else 0)), (0x29, A.w(0)),
         (0x22, A.b(VE_DIESEL if e.get("traction") == "diesel" and power else VE_DISABLED)),
     ]

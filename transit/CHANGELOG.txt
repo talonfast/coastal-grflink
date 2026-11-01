@@ -1,6 +1,11 @@
 PNW Transit - changelog
 =======================
 
+v2 (2026-10-31)
+- Fix: every vehicle boarded and unloaded at the default 5 passengers per step,
+  so high-capacity cars took ages at stations. Loading speed now scales with
+  capacity (about 8 steps to fill).
+
 v1 (2026-10-31)
 - New: BC Transit Enviro500 double-decker, in the red, white and blue livery
   and (as a variant) the 2024 green livery.
