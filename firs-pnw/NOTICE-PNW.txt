@@ -1,0 +1,7 @@
+FIRS PNW - a fork of FIRS Industry Replacement Set 5.2.0 (andythenorth and contributors, GPL v2; see license.pt).
+
+Third-party art in this fork:
+- src/graphics/industries/dreamlifter_delivery_airport.png contains the Boeing 747-400 sprite from the
+  World Airliners Set 0.1 (by PikkaBird and the WAS team), licensed under the GNU GPL v3.
+  FIRS itself is GPL v2 only, so a GRF built from this tree combines GPL v2-only and GPL v3 material and must
+  not be distributed. Keep this repository private; build FIRS PNW for personal use.
