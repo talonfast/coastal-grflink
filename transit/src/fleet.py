@@ -81,7 +81,7 @@ RAIL = [
          name="Amtrak Cascades Airo cab car", kmh=200, t=48, cap=50, cost=70, life=30, model_life=40,
          desc="Coach with a driving cab at its back end: put it last in the train."),
     dict(id="aircraft_car", gfx="aircraft_car", model=V.aircraft_car, year=1968, wagon=True,
-         cargo=["ACFT", "ACFC", "FLPL"], name="Aircraft flatcar", kmh=110, t=30, cap=1, cost=70, life=40,
+         cargo=["ACFT", "ACFC", "FLPL"], name="Aircraft flatcar", kmh=110, t=30, cap=30, cost=70, life=40,
          model_life=60,
          desc="Heavy flatcar for FIRS PNW's aircraft, certified aircraft and floatplanes, like the cars that bring "
               "Boeing's 737 fuselages to Renton."),
